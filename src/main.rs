@@ -12,15 +12,15 @@ fn print_jokes() {
     #[derive(Deserialize)]
     struct ChuckNorrisJoke {
         value: String,
-        icon_url: String,
     }
     let url = "https://api.chucknorris.io/jokes/random";
     loop {
         let response: ChuckNorrisJoke = get(url).unwrap().json().unwrap();
         println!("{}", response.value);
         print!("Want more? ");
-        if readln!() == "no" {
-            break;
+        match readln!().as_str() {
+            "no" | "quit" | "exit" => break,
+            _ => continue,
         }
     }
 }
