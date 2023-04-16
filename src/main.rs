@@ -58,7 +58,6 @@ fn main() {
                 let message = r.get_message();
                 println!("{}", message.content);
                 session.push_message(message);
-                //session.push_message(Message::new(Role::Assistant, message.content.as_str()));
             }
             Err(err) => eprintln!("Error occured: {}", err),
         }
