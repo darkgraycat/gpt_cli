@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 
 pub enum Role {
     System,
@@ -6,7 +6,7 @@ pub enum Role {
     Assistant,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Serialize)]
 pub struct Response {
     id: String,
     object: String,
@@ -20,23 +20,23 @@ impl Response {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Serialize)]
 pub struct Usage {
     prompt_tokens: u32,
     completion_tokens: u32,
     total_tokens: u32,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Serialize)]
 pub struct Choice {
     message: Message,
     finish_reason: String,
     index: u32,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Deserialize, Debug, Serialize)]
 pub struct Message {
-    role: String,
+    pub role: String,
     pub content: String,
 }
 impl Message {
@@ -47,12 +47,8 @@ impl Message {
                 Role::Assistant => "assistant",
                 Role::System => "system",
                 Role::User => "user",
-            }.to_owned(),
+            }
+            .to_owned(),
         }
-    }
-}
-impl ToString for Message {
-    fn to_string(&self) -> String {
-        format!(r#"{{"role":"{}","content":"{}"}}"#, self.role, self.content)
     }
 }

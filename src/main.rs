@@ -5,22 +5,16 @@ mod session;
 use reqwest::blocking::Client;
 use reqwest::Error;
 use response::{Message, Response, Role};
+use serde_json;
 use session::Session;
 
 const CHAT_GPT_URL: &'static str = "https://api.openai.com/v1/chat/completions";
 const CHAT_GPT_MODEL: &'static str = "gpt-3.5-turbo";
 const DEFAULT_SYS_USER_MESSAGE: &'static str = "Please provide short answers";
-const SEPARATOR: &'static str = "--------------------------------";
+const SEPARATOR: &'static str = "---------------- type 'quit' to exit ----------------";
 
-fn ask_gpt<T:ToString>(session: &mut Session<T>) -> Result<Response, Error> {
-    let payload = format!(
-        r#"{{
-            "model": "{}",
-            "messages": [{}]
-        }}"#,
-        CHAT_GPT_MODEL,
-        session.get_messages()
-    );
+fn ask_gpt(session: &mut Session<Message>) -> Result<Response, Error> {
+    let payload = serde_json::to_string(&session.to_payload()).unwrap();
     let request = Client::new()
         .post(CHAT_GPT_URL)
         .header("Authorization", format!("Bearer {}", session.apikey))
@@ -33,18 +27,20 @@ fn ask_gpt<T:ToString>(session: &mut Session<T>) -> Result<Response, Error> {
 fn main() {
     print!("Enter apikey > ");
     let input = readln!();
-    let mut session = Session::<Message>::new(&input);
+    let mut session = Session::<Message>::new(input, String::from(CHAT_GPT_MODEL));
 
     print!("Enter context or leave empty > ");
     let input = readln!();
-    let sys_context = if input.is_empty() {
-        DEFAULT_SYS_USER_MESSAGE
-    } else {
-        &input
-    };
-    session.push_message(Message::new(Role::System, sys_context));
 
-    println!("Type \'quit\' to close application");
+    session.push_message(Message::new(
+        Role::System,
+        if input.is_empty() {
+            DEFAULT_SYS_USER_MESSAGE
+        } else {
+            &input
+        },
+    ));
+
     loop {
         print!("{}\n> ", SEPARATOR);
         let input = readln!();

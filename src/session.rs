@@ -1,24 +1,32 @@
+use serde::Serialize;
+
 #[derive(Debug)]
-pub struct Session<T: ToString> {
+pub struct Session<T> {
     pub apikey: String,
+    pub model: String,
     messages: Vec<T>,
 }
-impl <T: ToString> Session<T> {
-    pub fn new(apikey: &str) -> Session<T> {
+impl<T: Clone> Session<T> {
+    pub fn new(apikey: String, model: String) -> Session<T> {
         Session {
-            apikey: apikey.to_owned(),
+            apikey,
+            model,
             messages: Vec::new(),
         }
     }
     pub fn push_message(&mut self, message: T) {
         self.messages.push(message);
     }
-    pub fn get_messages(&self) -> String {
-        self.messages
-            .iter()
-            .map(|msg| msg.to_string())
-            .collect::<Vec<String>>()
-            .join(",")
+    pub fn to_payload(&self) -> Payload<T> {
+        Payload {
+            model: self.model.to_owned(),
+            messages: self.messages.to_owned()
+        }
     }
-    
+}
+
+#[derive(Serialize)]
+pub struct Payload<T> {
+    model: String,
+    messages: Vec<T>,
 }
