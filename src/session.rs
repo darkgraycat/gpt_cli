@@ -6,7 +6,7 @@ pub struct Session<T> {
     pub model: String,
     messages: Vec<T>,
 }
-impl<T: Clone> Session<T> {
+impl <T> Session<T> {
     pub fn new(apikey: String, model: String) -> Session<T> {
         Session {
             apikey,
@@ -17,6 +17,8 @@ impl<T: Clone> Session<T> {
     pub fn push_message(&mut self, message: T) {
         self.messages.push(message);
     }
+}
+impl <T: Clone> Session<T> {
     pub fn to_payload(&self) -> Payload<T> {
         Payload {
             model: self.model.to_owned(),
@@ -24,7 +26,6 @@ impl<T: Clone> Session<T> {
         }
     }
 }
-
 #[derive(Serialize)]
 pub struct Payload<T> {
     model: String,
