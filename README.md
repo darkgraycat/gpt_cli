@@ -2,19 +2,9 @@
 ChatGPT CLI written in Rust
 
 ---
-## Application flow
-- start application
-- prompt userdata
-- open connection
-- enter main loop
-- - wait for input
-- - validate input
-- - parse input
-- - evaluate input
-- - repeat
-- close connection
-- close application
-
----
-## Implementation plan
-...in progress
+## How to use
+1. Get OpenAI apikey at [link](https://platform.openai.com/account/api-keys)
+2. Enter apikey
+3. Provide context, or leave empty for short answers
+4. Chat with ChatGPT
+5. Type 'quit' to close application
