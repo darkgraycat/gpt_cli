@@ -15,8 +15,8 @@ pub struct Response {
     choices: Vec<Choice>,
 }
 impl Response {
-    pub fn get_message(&self) -> &Message {
-        &self.choices[0].message
+    pub fn get_message(mut self) -> Message {
+        self.choices.remove(0).message
     }
 }
 

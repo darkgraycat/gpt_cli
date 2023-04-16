@@ -1,18 +1,16 @@
-use crate::response::Message;
-
 #[derive(Debug)]
-pub struct Session {
+pub struct Session<T: ToString> {
     pub apikey: String,
-    messages: Vec<Message>,
+    messages: Vec<T>,
 }
-impl Session {
-    pub fn new(apikey: &str) -> Session {
+impl <T: ToString> Session<T> {
+    pub fn new(apikey: &str) -> Session<T> {
         Session {
             apikey: apikey.to_owned(),
             messages: Vec::new(),
         }
     }
-    pub fn push_message(&mut self, message: Message) {
+    pub fn push_message(&mut self, message: T) {
         self.messages.push(message);
     }
     pub fn get_messages(&self) -> String {
@@ -22,4 +20,5 @@ impl Session {
             .collect::<Vec<String>>()
             .join(",")
     }
+    
 }
