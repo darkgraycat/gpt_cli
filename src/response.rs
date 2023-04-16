@@ -1,16 +1,22 @@
 use serde::Deserialize;
 
+pub enum Role {
+    System,
+    User,
+    Assistant,
+}
+
 #[derive(Deserialize, Debug)]
 pub struct Response {
     id: String,
     object: String,
     model: String,
     usage: Usage,
-    pub choices: Vec<Choice>,
+    choices: Vec<Choice>,
 }
 impl Response {
-    pub fn parse(self) -> String {
-        self.choices[0].message.content.to_owned()
+    pub fn get_message(&self) -> &Message {
+        &self.choices[0].message
     }
 }
 
@@ -23,13 +29,30 @@ pub struct Usage {
 
 #[derive(Deserialize, Debug)]
 pub struct Choice {
-    pub message: Message,
+    message: Message,
     finish_reason: String,
     index: u32,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct Message {
-    pub role: String,
+    role: String,
     pub content: String,
+}
+impl Message {
+    pub fn new(role: Role, content: &str) -> Message {
+        Message {
+            content: content.to_owned(),
+            role: match role {
+                Role::Assistant => "assistant",
+                Role::System => "system",
+                Role::User => "user",
+            }.to_owned(),
+        }
+    }
+}
+impl ToString for Message {
+    fn to_string(&self) -> String {
+        format!(r#"{{"role":"{}","content":"{}"}}"#, self.role, self.content)
+    }
 }
