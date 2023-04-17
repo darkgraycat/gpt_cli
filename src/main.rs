@@ -46,6 +46,7 @@ fn format_gtp_answer(msg: &str) -> String {
 fn main() {
     print!("Enter apikey\n{}> {}", CLR_INPUT, CLR_RESET);
     let input = readln!();
+
     let mut session = Session::<Message>::new(input, String::from(CHAT_GPT_MODEL));
 
     print!("Enter context or leave empty\n{}> {}", CLR_INPUT, CLR_RESET);
