@@ -3,6 +3,7 @@ use serde::{Serialize, Deserialize};
 pub enum Role {
     System,
     User,
+    #[allow(dead_code)]
     Assistant,
 }
 
@@ -34,7 +35,7 @@ pub struct Choice {
     index: u32,
 }
 
-#[derive(Clone, Deserialize, Debug, Serialize)]
+#[derive(Deserialize, Debug, Serialize)]
 pub struct Message {
     pub role: String,
     pub content: String,

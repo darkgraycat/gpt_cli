@@ -1,12 +1,13 @@
 use serde::Serialize;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Session<T> {
-    pub apikey: String,
     pub model: String,
-    messages: Vec<T>,
+    pub messages: Vec<T>,
+    #[serde(skip)]
+    pub apikey: String,
 }
-impl <T> Session<T> {
+impl<T> Session<T> {
     pub fn new(apikey: String, model: String) -> Session<T> {
         Session {
             apikey,
@@ -17,17 +18,4 @@ impl <T> Session<T> {
     pub fn push_message(&mut self, message: T) {
         self.messages.push(message);
     }
-}
-impl <T: Clone> Session<T> {
-    pub fn to_payload(&self) -> Payload<T> {
-        Payload {
-            model: self.model.to_owned(),
-            messages: self.messages.to_owned()
-        }
-    }
-}
-#[derive(Serialize)]
-pub struct Payload<T> {
-    model: String,
-    messages: Vec<T>,
 }

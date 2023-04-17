@@ -14,7 +14,7 @@ const DEFAULT_SYS_USER_MESSAGE: &'static str = "Please provide short answers";
 const SEPARATOR: &'static str = "---------------- type 'quit' to exit ----------------";
 
 fn ask_gpt(session: &mut Session<Message>) -> Result<Response, Error> {
-    let payload = serde_json::to_string(&session.to_payload()).unwrap();
+    let payload = serde_json::to_string(&session).unwrap();
     let request = Client::new()
         .post(CHAT_GPT_URL)
         .header("Authorization", format!("Bearer {}", session.apikey))
