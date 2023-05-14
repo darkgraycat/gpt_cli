@@ -18,7 +18,7 @@ const CLR_INPUT: &'static str = "\x1b[32m";
 const CLR_SEPARATOR: &'static str = "\x1b[31m";
 const CLR_CODEBLOCK: &'static str = "\x1b[36m";
 
-fn ask_gpt(session: &mut Session<Message>) -> Result<Response, Error> {
+fn send_gpt_request(session: &mut Session<Message>) -> Result<Response, Error> {
     let payload = serde_json::to_string(&session).unwrap();
     let request = Client::new()
         .post(CHAT_GPT_URL)
@@ -47,7 +47,11 @@ fn main() {
     print!("Enter apikey\n{}> {}", CLR_INPUT, CLR_RESET);
     let input = readln!();
 
-    let mut session = Session::<Message>::new(input, String::from(CHAT_GPT_MODEL));
+    print!("Restore session?\n{}> {}", CLR_INPUT, CLR_RESET);
+    let mut session = match readln!().as_str() {
+        "y" | "yes" => Session::<Message>::load(input).unwrap(),
+        _ => Session::<Message>::new(input, String::from(CHAT_GPT_MODEL))
+    };
 
     print!("Enter context or leave empty\n{}> {}", CLR_INPUT, CLR_RESET);
     let input = readln!();
@@ -68,13 +72,14 @@ fn main() {
         );
         let input = readln!();
         if input == "quit" {
+            session.save().expect("Error on saving session");
             break;
         }
         session.push_message(Message::new(Role::User, &input));
-        let response = ask_gpt(&mut session);
+        let response = send_gpt_request(&mut session);
         match response {
-            Ok(r) => {
-                let message = r.get_message();
+            Ok(resp) => {
+                let message = resp.get_message();
                 println!("{}", format_gtp_answer(&message.content));
                 session.push_message(message);
             }
